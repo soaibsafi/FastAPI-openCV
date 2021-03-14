@@ -12,25 +12,19 @@ ALLOWED_EXTENSION = {'jpg', 'png', 'jpeg'}
 
 app = FastAPI(title='openCV Visualization')
 
-
-def gaussian_blur(image: Image.Image):
-    img = cv2.GaussianBlur(image, (5,5), 0, 0)
-    return img
-
 @app.get('/')
 async def index():
     return 'Hello World'
 
-@app.post('/opencv')
-async def openCV(file: UploadFile = File(...)):
-    # file_extension = file.filename.split('.')[-1] in ALLOWED_EXTENSION
-    # if not file_extension:
-    #     return 'Filename is invalid.'
-    contents = await file.read()
-    nparr = np.fromstring(contents, np.uint8)
+@app.post('/gaussian-blur')
+async def _gaussian_blur(file: UploadFile = File(...)):
+    file_extension = file.filename.split('.')[-1] in ALLOWED_EXTENSION
+    if not file_extension:
+        return 'File type is invalid.'
+    image = await file.read()
+    nparr = np.fromstring(image, np.uint8)
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
-    image = gaussian_blur(image)
+    image = cv2.GaussianBlur(image, (5,5), 0, 0)
     res, img_png = cv2.imencode('.png', image)
     #encoded_img = base64.b64encode(img_png)
 
