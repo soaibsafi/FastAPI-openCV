@@ -9,6 +9,8 @@ from starlette.responses import StreamingResponse
 
 
 ALLOWED_EXTENSION = {'jpg', 'png', 'jpeg'}
+UPLOAD_FOLDER = 'static/uploads'
+DOWNLOAD_FOLDER = 'static/downloads'
 
 app = FastAPI(title='openCV Visualization')
 
@@ -28,7 +30,7 @@ async def _gaussian_blur(file: UploadFile = File(...)):
     res, img_png = cv2.imencode('.png', image)
     #encoded_img = base64.b64encode(img_png)
 
-    cv2.imwrite("filename.png", image)
+    cv2.imwrite(f"{UPLOAD_FOLDER}/{file.filename}", image)
 
     return StreamingResponse(BytesIO(img_png.tobytes()), media_type="image/png")
 
